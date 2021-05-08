@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "declaration": true,
+      "outDir": "./lib",
+      "strict": true,
+      "resolveJsonModule": true,
+      "strictNullChecks": false,
+      "esModuleInterop": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["lib/*"]
+  }
