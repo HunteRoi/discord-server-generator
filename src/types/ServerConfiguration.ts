@@ -1,9 +1,12 @@
-import { RoleChannelConfiguration } from "./RoleChannelConfiguration";
-import { YearConfiguration } from "./YearConfiguration";
+import { RoleData } from 'discord.js';
+
+import { RoleChannelConfiguration } from './RoleChannelConfiguration';
+import { YearConfiguration } from './YearConfiguration';
 
 export interface ServerConfiguration {
-  forceCleanServer: boolean;
+  forceCleanServer?: boolean;
   prefix: string;
-  years: YearConfiguration[];
-  others: RoleChannelConfiguration[];
+  roles?: RoleData[];
+  manyTimesGeneration?: YearConfiguration[];
+  oneTimeGeneration?: RoleChannelConfiguration[];
 }

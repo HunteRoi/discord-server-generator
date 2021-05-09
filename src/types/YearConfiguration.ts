@@ -1,4 +1,4 @@
-import { RoleChannelConfiguration } from "./RoleChannelConfiguration";
+import { RoleChannelConfiguration } from './RoleChannelConfiguration';
 
 export interface YearConfiguration {
   prefix?: string;
