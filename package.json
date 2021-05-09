@@ -17,9 +17,9 @@
   },
   "keywords": [
     "discordjs",
-    "guild generator",
-    "server generator",
-    "template discord"
+    "guild-generator",
+    "server-generator",
+    "template-discord"
   ],
   "author": "HunteRoi",
   "license": "MIT",

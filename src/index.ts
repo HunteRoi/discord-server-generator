@@ -1,7 +1,8 @@
-import { Client, ClientOptions } from 'discord.js';
+import { Client, ClientOptions, Snowflake } from 'discord.js';
 import EventEmitter from 'events';
 
 import { ServerGeneratorManagerOptions } from './types';
+import { createChannels } from './utils/createChannels';
 
 /**
  *
@@ -33,6 +34,14 @@ export class ServerGeneratorManager extends EventEmitter {
    */
   constructor(client: Client, options: ServerGeneratorManagerOptions) {
     super();
+
+    this.client = client;
+    this.options = options;
+  }
+
+  async generate(guildId: Snowflake) {
+    const guild = await this.client.guilds.fetch(guildId);
+    const channels = await Promise.all(this.options.oneTimeChannelsConfiguration.map(options => createChannels(guild, options)));
   }
 }
 
@@ -65,7 +74,7 @@ export class ServerGeneratorClient extends Client {
 }
 
 /**
- * Emitted when 
+ * Emitted when
  * @event ServerGeneratorManager#
  * @param {Type} param
  * @example
