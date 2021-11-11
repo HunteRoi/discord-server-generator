@@ -1,3 +1,5 @@
+[![npm (scoped)](https://img.shields.io/npm/v/@hunteroi/discord-server-generator?color=green)](https://www.npmjs.com/package/@hunteroi/discord-server-generator)
+
 # Discord Server Generator
 
 Discord Server Generator is a framework which allows you to create your server based on a JSON configuration acting like the server template.
