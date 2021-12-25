@@ -21,7 +21,11 @@
     "server-generator",
     "template-discord"
   ],
-  "author": "HunteRoi",
+	"author": "HunteRoi <me@tinaeldevresse.eu> (https://tinaeldevresse.eu/)",
+	"funding": "https://github.com/sponsors/hunteroi",
+	"engines": {
+	  "node": ">=16.6.0"
+	},
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hunteroi/discord-server-generator/issues"
