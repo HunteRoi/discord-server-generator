@@ -11,6 +11,8 @@ Discord Server Generator is a framework which allows you to create your server b
 
 ![IMAGE](./assets/example.gif)
 
+See [./example/index.js](./example/index.js).
+
 ## Prerequisites ⚠️
 
 You must use **NodeJS v16.6.0 or higher** to run a bot with this library.
@@ -32,10 +34,6 @@ As another logical note, it is mandatory that your bot's role is the highest in 
 ```sh
 npm install --save @hunteroi/discord-server-generator
 ```
-
-## Examples
-
-See [./example/index.js](example/index.js).
 
 ## Events
 
