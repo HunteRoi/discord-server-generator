@@ -9,7 +9,7 @@ Discord Server Generator is a framework which allows you to create your server b
 - Emits events like `guildGenerate`, `channelCreate`, `roleCreate` and **9 more**!
 - And much more!
 
-![IMAGE](assets/example.gif)
+![IMAGE](./assets/example.gif)
 
 ## Prerequisites ⚠️
 
