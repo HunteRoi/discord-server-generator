@@ -1,4 +1,5 @@
-[![npm (scoped)](https://img.shields.io/npm/v/@hunteroi/discord-server-generator?color=green)](https://www.npmjs.com/package/@hunteroi/discord-server-generator)
+<a href="https://www.npmjs.com/@hunteroi/discord-server-generator"><img src="https://img.shields.io/github/v/release/hunteroi/discord-server-generator?style=for-the-badge" alt="release version"/></a>
+<a href="https://www.npmjs.com/@hunteroi/discord-server-generator"><img src="https://img.shields.io/npm/dt/@hunteroi/discord-server-generator?style=for-the-badge" alt="nb downloads npm"/></a>
 
 # Discord Server Generator
 
