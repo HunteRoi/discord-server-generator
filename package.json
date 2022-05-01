@@ -1,31 +1,26 @@
 {
   "name": "@hunteroi/discord-server-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A framework to generate Discord guild categories, channels and roles, built with DiscordJS",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" --tab-width 4",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"example/**/*.ts\" \"example/**/*.js\" ",
     "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build",
-    "example": "npm run build & node ./example/index.js"
+    "example": "yarn build & node ./example/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hunteroi/discord-server-generator.git"
-  },
+  "repository": "git://github.com/hunteroi/discord-server-generator.git",
   "keywords": [
     "discordjs",
     "guild-generator",
     "server-generator",
     "template-discord"
   ],
-	"author": "HunteRoi <me@tinaeldevresse.eu> (https://tinaeldevresse.eu/)",
-	"funding": "https://github.com/sponsors/hunteroi",
-	"engines": {
-	  "node": ">=16.6.0"
-	},
+  "author": "HunteRoi <me@tinaeldevresse.eu> (https://tinaeldevresse.eu/)",
+  "funding": "https://github.com/sponsors/hunteroi",
+  "engines": {
+    "node": ">=16.6.0"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hunteroi/discord-server-generator/issues"

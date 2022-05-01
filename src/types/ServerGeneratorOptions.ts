@@ -1,3 +1,3 @@
 export interface ServerGeneratorOptions {
-	reason?: string;
+  reason?: string;
 }

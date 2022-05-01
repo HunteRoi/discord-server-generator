@@ -5,9 +5,9 @@
 
 Discord Server Generator is a framework which allows you to create your server based on a JSON configuration acting like the server template.
 
--   Supports threads, custom emojis and stickers
--   Emits events like `guildGenerate`, `channelCreate`, `roleCreate` and **9 more**!
--   And much more!
+- Supports threads, custom emojis and stickers
+- Emits events like `guildGenerate`, `channelCreate`, `roleCreate` and **9 more**!
+- And much more!
 
 ![IMAGE](assets/example.gif)
 
@@ -21,11 +21,11 @@ As another logical note, it is mandatory that your bot's role is the highest in 
 
 ### Mandatory intents
 
--   GUILDS: used to access guild content such as channels.
+- GUILDS: used to access guild content such as channels.
 
 ### Optional intents
 
--   GUILD_EMOJIS_AND_STICKERS: use to access and add guild emojis and stickers.
+- GUILD_EMOJIS_AND_STICKERS: use to access and add guild emojis and stickers.
 
 ## Installation
 
@@ -41,55 +41,52 @@ See [./example/index.js](example/index.js).
 
 ```ts
 manager.on(
-	ServerGeneratorManagerEvents.guildGenerate,
-	(guild: Guild, options: GuildOptions) => {}
+  ServerGeneratorManagerEvents.guildGenerate,
+  (guild: Guild, options: GuildOptions) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.guildGenerated,
-	(guild: Guild, options: GuildOptions) => {}
+  ServerGeneratorManagerEvents.guildGenerated,
+  (guild: Guild, options: GuildOptions) => {}
 );
 
 manager.on(ServerGeneratorManagerEvents.roleDelete, (role: Role) => {});
 
 manager.on(
-	ServerGeneratorManagerEvents.channelDelete,
-	(channel: GuildChannel) => {}
+  ServerGeneratorManagerEvents.channelDelete,
+  (channel: GuildChannel) => {}
 );
 
 manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji: GuildEmoji) => {});
 
 manager.on(
-	ServerGeneratorManagerEvents.stickerDelete,
-	(sticker: Sticker) => {}
+  ServerGeneratorManagerEvents.stickerDelete,
+  (sticker: Sticker) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.channelCreate,
-	(
-		channel: GuildChannel,
-		options: CategoryOptions | GuildChannelOptions
-	) => {}
+  ServerGeneratorManagerEvents.channelCreate,
+  (channel: GuildChannel, options: CategoryOptions | GuildChannelOptions) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.threadCreate,
-	(thread: ThreadChannel, options: ThreadOptions) => {}
+  ServerGeneratorManagerEvents.threadCreate,
+  (thread: ThreadChannel, options: ThreadOptions) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.roleCreate,
-	(role: Role, options: RoleOptions) => {}
+  ServerGeneratorManagerEvents.roleCreate,
+  (role: Role, options: RoleOptions) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.emojiCreate,
-	(emoji: GuildEmoji, options: EmojiOptions) => {}
+  ServerGeneratorManagerEvents.emojiCreate,
+  (emoji: GuildEmoji, options: EmojiOptions) => {}
 );
 
 manager.on(
-	ServerGeneratorManagerEvents.stickerCreate,
-	(sticker: Sticker, options: StickerOptions) => {}
+  ServerGeneratorManagerEvents.stickerCreate,
+  (sticker: Sticker, options: StickerOptions) => {}
 );
 ```
 
