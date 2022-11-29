@@ -7,9 +7,9 @@
     "build": "tsc",
     "build:docs": "typedoc",
     "prepublish": "yarn build:docs",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"example/**/*.ts\" \"example/**/*.js\" ",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"examples/**/*.ts\" \"examples/**/*.js\" ",
     "lint": "tslint -p tsconfig.json",
-    "example": "yarn build & node ./example/index.js"
+    "example": "yarn build & node ./examples/index.js"
   },
   "repository": "git://github.com/hunteroi/discord-server-generator.git",
   "keywords": [
