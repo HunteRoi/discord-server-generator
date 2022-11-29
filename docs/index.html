@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- template from https://github.com/learning-zone/website-templates/tree/master/3-col-portfolio -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The profile website for the @hunteroi/discord-server-generator package"
+    />
+    <meta name="author" content="HunteRoi" />
+    <title>@hunteroi/discord-server-generator</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      body {
+        margin-top: 1em;
+      }
+
+      .portfolio-item {
+        margin-bottom: 25px;
+      }
+
+      footer {
+        margin: 50px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="page-header">
+            <a href="https://github.com/hunteroi/discord-server-generator" target="_self"
+              >@hunteroi/discord-server-generator</a
+            >
+          </h1>
+        </div>
+      </div>
+
+      <div class="row text-center">
+        <div class="col portfolio-item">
+          <a href="api-docs/index.html">
+            <img
+              width="256"
+              height="256"
+              class="img-responsive rounded mx-auto d-block"
+              src="https://user-images.githubusercontent.com/21266147/101224549-386fb400-368f-11eb-8390-6db2ecd1fe61.png"
+            />
+          </a>
+          <h3><a href="api-docs/index.html">API Documentation</a></h3>
+          <p>
+            The project's API documentation, everything you need to know about
+            the classes!
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- /.container -->
+
+    <div class="container text-center">
+      <hr />
+      <footer>
+        <div class="row">
+          <div class="col-lg-12">
+            <p>Copyright &copy; hunteroi <span id="getCurrentDate"></span></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <p>
+              <small
+                >Page templated edited from
+                <a
+                  href="https://github.com/learning-zone/website-templates/tree/master/3-col-portfolio"
+                  target="_blank"
+                  >original 3-col-portfolio</a
+                >
+              </small>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <!-- /.container -->
+
+    <!-- JavaScript -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript">
+      var dt = new Date();
+      document.getElementById('getCurrentDate').innerHTML = dt.getFullYear();
+    </script>
+  </body>
+</html>

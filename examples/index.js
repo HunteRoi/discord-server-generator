@@ -29,7 +29,7 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
     await manager.generate(interaction.guildId, {
       name: 'new guild name',
-      icon: './example/icon.jpg',
+      icon: './examples/icon.jpg',
       roles: [
         {
           name: 'first role',
@@ -71,7 +71,7 @@ client.on('interactionCreate', async (interaction) => {
           ],
         },
       ],
-      emojis: [{ name: 'red', attachment: './example/icon.jpg' }],
+      emojis: [{ name: 'red', attachment: './examples/icon.jpg' }],
     });
   }
 });
