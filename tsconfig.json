@@ -15,7 +15,7 @@
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
     "out": "docs/api-docs",
-    "exclude": ["node_modules"],
+    "exclude": ["**/node_modules/**"],
     "excludePrivate": true,
     "hideGenerator": true
   }

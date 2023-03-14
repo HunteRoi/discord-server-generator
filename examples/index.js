@@ -1,14 +1,10 @@
-const { Client, Intents } = require('discord.js');
+const { Client, IntentsBitField, ChannelType } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const synchronizeSlashCommands = require('discord-sync-commands');
-const {
-  ServerGeneratorManager,
-  ServerGeneratorManagerEvents,
-} = require('../lib');
 
-const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
-});
+const { ServerGeneratorManager, ServerGeneratorManagerEvents } = require('../lib');
+
+const client = new Client({ intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildEmojisAndStickers] });
 synchronizeSlashCommands(
   client,
   [
@@ -20,9 +16,7 @@ synchronizeSlashCommands(
   ],
   {}
 );
-const manager = new ServerGeneratorManager(client, {
-  reason: 'A ServerGeneratorManager action!',
-});
+const manager = new ServerGeneratorManager(client, { reason: 'A ServerGeneratorManager action!' });
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand() && interaction.commandName === 'generate') {
@@ -42,30 +36,31 @@ client.on('interactionCreate', async (interaction) => {
         {
           name: 'rules',
           isRulesChannel: true,
-          type: 'GUILD_TEXT',
+          type: ChannelType.GuildText,
         },
         {
           name: 'afk',
           isAFKChannel: true,
-          type: 'GUILD_VOICE',
+          type: ChannelType.GuildVoice,
         },
         {
           name: 'general',
-          type: 'GUILD_TEXT',
+          type: ChannelType.GuildText,
         },
       ],
       channels: [
         {
           name: 'CategorY',
+          type: ChannelType.GuildCategory,
           children: [
             {
               name: 'bot',
-              type: 'GUID_TEXT',
+              type: ChannelType.GuildText,
               children: [{ name: 'thread name' }],
             },
             {
               name: 'voice',
-              type: 'GUILD_VOICE',
+              type: ChannelType.GuildVoice,
               userLimit: 5,
             },
           ],
@@ -78,48 +73,48 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('ready', () => console.log('Connected!'));
 
-manager.on(ServerGeneratorManagerEvents.guildGenerate, (guild, options) => {
-  console.log(`Generating guild ${guild.id} with options`, options);
+manager.on(ServerGeneratorManagerEvents.guildGenerate, (guild, options, reason) => {
+  console.log(`Generating guild ${guild.id} for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.guildGenerated, (guild, options) => {
-  console.log(`Generated guild ${guild.id} with options`, options);
+manager.on(ServerGeneratorManagerEvents.guildGenerated, (guild, options, reason) => {
+  console.log(`Generated guild ${guild.id} for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.roleDelete, (role) => {
-  console.log(`Role ${role.id} deleted`);
+manager.on(ServerGeneratorManagerEvents.roleDelete, (role, reason) => {
+  console.log(`Role ${role.id} deleted for reason ${reason}`);
 });
 
-manager.on(ServerGeneratorManagerEvents.channelDelete, (channel) => {
-  console.log(`Channel ${channel.id} deleted`);
+manager.on(ServerGeneratorManagerEvents.channelDelete, (channel, reason) => {
+  console.log(`Channel ${channel.id} deleted for reason ${reason}`);
 });
 
-manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji) => {
-  console.log(`Emoji ${emoji.id} deleted`);
+manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji, reason) => {
+  console.log(`Emoji ${emoji.id} deleted for reason ${reason}`);
 });
 
-manager.on(ServerGeneratorManagerEvents.stickerDelete, (sticker) => {
-  console.log(`Sticker ${sticker.id} deleted`);
+manager.on(ServerGeneratorManagerEvents.stickerDelete, (sticker, reason) => {
+  console.log(`Sticker ${sticker.id} deleted for reason ${reason}`);
 });
 
-manager.on(ServerGeneratorManagerEvents.channelCreate, (channel, options) => {
-  console.log(`Channel ${channel.id} created with options`, options);
+manager.on(ServerGeneratorManagerEvents.channelCreate, (channel, options, reason) => {
+  console.log(`Channel ${channel.id} created for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.threadCreate, (thread, options) => {
-  console.log(`Thread ${thread.id} created with options`, options);
+manager.on(ServerGeneratorManagerEvents.threadCreate, (thread, options, reason) => {
+  console.log(`Thread ${thread.id} created for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.roleCreate, (role, options) => {
-  console.log(`Role ${role.id} created with options`, options);
+manager.on(ServerGeneratorManagerEvents.roleCreate, (role, options, reason) => {
+  console.log(`Role ${role.id} created for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.emojiCreate, (emoji, options) => {
-  console.log(`Emoji ${emoji.id} created with options`, options);
+manager.on(ServerGeneratorManagerEvents.emojiCreate, (emoji, options, reason) => {
+  console.log(`Emoji ${emoji.id} created for reason ${reason} with options`, options);
 });
 
-manager.on(ServerGeneratorManagerEvents.stickerCreate, (sticker, options) => {
-  console.log(`Sticker ${sticker.id} created with options`, options);
+manager.on(ServerGeneratorManagerEvents.stickerCreate, (sticker, options, reason) => {
+  console.log(`Sticker ${sticker.id} created for reason ${reason} with options`, options);
 });
 
 client.login('TOKEN');

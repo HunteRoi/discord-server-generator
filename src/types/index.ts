@@ -1,45 +1,44 @@
 import {
-  CreateRoleOptions,
+  RoleCreateOptions,
   GuildChannelCreateOptions,
   GuildCreateOptions,
-  ThreadCreateOptions,
   AllowedThreadTypeForTextChannel,
   AllowedThreadTypeForNewsChannel,
-  CategoryCreateChannelOptions,
+  GuildTextThreadCreateOptions,
+  GuildForumThreadCreateOptions,
+  ChannelType,
+  GuildEmojiCreateOptions,
+  GuildStickerCreateOptions
 } from 'discord.js';
 
-import { GuildEmojiOptions, GuildStickerOptions } from './DiscordExtraTypes';
-
-export { DeletableEntity } from './DiscordExtraTypes';
 export * from './ServerGeneratorOptions';
 
 type AnyProperty = {
   [name: string]: any;
 };
 
-export type RoleOptions = Omit<CreateRoleOptions, 'name'> & {
-  name: string;
-} & AnyProperty;
-export type EmojiOptions = GuildEmojiOptions & AnyProperty;
-export type StickerOptions = GuildStickerOptions & AnyProperty;
+export type RoleOptions = RoleCreateOptions & AnyProperty;
+export type EmojiOptions = GuildEmojiCreateOptions & AnyProperty;
+export type StickerOptions = GuildStickerCreateOptions & AnyProperty;
 
 export type CategoryOptions = Omit<GuildChannelCreateOptions, 'type'> & {
-  readonly type: 'GUILD_CATEGORY';
+  readonly type: ChannelType.GuildCategory;
   children?: GuildChannelOptions[];
 } & AnyProperty;
 export type GuildChannelOptions = GuildChannelCreateOptions & {
-  type:
-    | 'GUILD_TEXT'
-    | 'GUILD_VOICE'
-    | 'GUILD_NEWS'
-    | 'GUILD_STORE'
-    | 'GUILD_STAGE_VOICE';
+  type: Exclude<
+    ChannelType,
+    | ChannelType.DM
+    | ChannelType.GroupDM
+    | ChannelType.PublicThread
+    | ChannelType.AnnouncementThread
+    | ChannelType.PrivateThread
+    | ChannelType.GuildCategory
+  >;
   children?: ThreadOptions[];
 } & AnyProperty;
-export type ThreadOptions = ThreadCreateOptions<
-  AllowedThreadTypeForTextChannel | AllowedThreadTypeForNewsChannel
-> &
-  AnyProperty;
+export type ThreadOptions = (GuildForumThreadCreateOptions | GuildTextThreadCreateOptions<AllowedThreadTypeForTextChannel | AllowedThreadTypeForNewsChannel>)
+  & AnyProperty;
 
 export type GuildOptions = {
   emojis?: EmojiOptions[];

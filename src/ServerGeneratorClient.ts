@@ -11,14 +11,11 @@ import { ServerGeneratorOptions } from './types';
  * @extends {Client}
  */
 export class ServerGeneratorClient extends Client {
-  public serverGeneratorManager: ServerGeneratorManager;
+  public readonly serverGeneratorManager: ServerGeneratorManager;
 
   constructor(options: ClientOptions, managerOptions: ServerGeneratorOptions) {
     super(options);
 
-    this.serverGeneratorManager = new ServerGeneratorManager(
-      this,
-      managerOptions
-    );
+    this.serverGeneratorManager = new ServerGeneratorManager(this, managerOptions);
   }
 }

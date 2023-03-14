@@ -38,54 +38,27 @@ npm install --save @hunteroi/discord-server-generator
 ## Events
 
 ```ts
-manager.on(
-  ServerGeneratorManagerEvents.guildGenerate,
-  (guild: Guild, options: GuildOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.guildGenerate, (guild: Guild, options: GuildOptions, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.guildGenerated,
-  (guild: Guild, options: GuildOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.guildGenerated, (guild: Guild, options: GuildOptions, reason?: string) => {});
 
-manager.on(ServerGeneratorManagerEvents.roleDelete, (role: Role) => {});
+manager.on(ServerGeneratorManagerEvents.roleDelete, (role: Role, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.channelDelete,
-  (channel: GuildChannel) => {}
-);
+manager.on(ServerGeneratorManagerEvents.channelDelete, (channel: GuildChannel, reason?: string) => {});
 
-manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji: GuildEmoji) => {});
+manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji: GuildEmoji, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.stickerDelete,
-  (sticker: Sticker) => {}
-);
+manager.on(ServerGeneratorManagerEvents.stickerDelete, (sticker: Sticker, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.channelCreate,
-  (channel: GuildChannel, options: CategoryOptions | GuildChannelOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.channelCreate, (channel: GuildChannel, options: CategoryOptions | GuildChannelOptions, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.threadCreate,
-  (thread: ThreadChannel, options: ThreadOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.threadCreate, (thread: ThreadChannel, options: ThreadOptions, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.roleCreate,
-  (role: Role, options: RoleOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.roleCreate, (role: Role, options: RoleOptions, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.emojiCreate,
-  (emoji: GuildEmoji, options: EmojiOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.emojiCreate, (emoji: GuildEmoji, options: EmojiOptions, reason?: string) => {});
 
-manager.on(
-  ServerGeneratorManagerEvents.stickerCreate,
-  (sticker: Sticker, options: StickerOptions) => {}
-);
+manager.on(ServerGeneratorManagerEvents.stickerCreate, (sticker: Sticker, options: StickerOptions, reason?: string) => {});
 ```
 
 ## Contribution

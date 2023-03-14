@@ -3,19 +3,26 @@ import {
   AllowedThreadTypeForTextChannel,
   Client,
   Collection,
-  Constants,
-  DataManager,
+  ForumChannel,
   Guild,
+  GuildBasedChannel,
   GuildChannelManager,
   GuildEmojiManager,
   GuildResolvable,
   GuildStickerManager,
-  Intents,
+  GatewayIntentBits,
   NewsChannel,
   RoleManager,
   Snowflake,
+  TextChannel,
   ThreadChannel,
-  ThreadCreateOptions,
+  GuildTextThreadCreateOptions,
+  GuildForumThreadCreateOptions,
+  ChannelType,
+  GuildPremiumTier,
+  CategoryChannel,
+  VoiceChannel,
+  StageChannel,
 } from 'discord.js';
 import EventEmitter from 'events';
 
@@ -27,11 +34,10 @@ import {
   RoleOptions,
   EmojiOptions,
   StickerOptions,
-  DeletableEntity,
   ServerGeneratorOptions,
   ThreadOptions,
 } from './types';
-import { handleChannelCreate } from './handlers';
+import { DeletableEntity } from './types/DiscordExtraTypes';
 
 /**
  *
@@ -44,90 +50,50 @@ export class ServerGeneratorManager extends EventEmitter {
   public options: ServerGeneratorOptions;
   private hasOptionalIntent: boolean = false;
 
-  constructor(client: Client, options: ServerGeneratorOptions) {
+  constructor(client: Client, options: ServerGeneratorOptions = {
+    reason: `Automated by ${client.user}`
+  }) {
     super();
 
-    const intents = new Intents(client.options.intents);
-    if (!intents.has(Intents.FLAGS.GUILDS)) {
+    if (!client.options.intents.has(GatewayIntentBits.Guilds)) {
       throw new Error('GUILDS intent is required to use this package!');
     }
-    if (!intents.has(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS)) {
-      console.warn(
-        'GUILD_EMOJIS_AND_STICKERS intent is optional for this package to work but could be a nice addition.'
-      );
+    if (!client.options.intents.has(GatewayIntentBits.GuildEmojisAndStickers)) {
+      console.warn('GUILD_EMOJIS_AND_STICKERS intent is optional for this package to work but could be a nice addition.');
     } else this.hasOptionalIntent = true;
 
     this.client = client;
     this.options = options;
 
-    this.on(ServerGeneratorManagerEvents.channelCreate, handleChannelCreate);
+    this.on(ServerGeneratorManagerEvents.channelCreate, this.#handleChannelCreate);
   }
 
-  public async generate(guild: GuildResolvable, options: GuildOptions) {
+  public async generate(guild: GuildResolvable, options: GuildOptions, reason?: string) {
+    const overallReason = reason ?? this.options.reason;
     const target = await this.client.guilds.fetch({ guild });
-    await this.getCaches(target);
-    if (target.roles.highest != target.roles.botRoleFor(this.client.user))
-      throw new Error(
-        "The bot's role has to be the highest in order to generate the whole guild from scratch."
-      );
+    await this.#getCaches(target);
 
-    this.emit(ServerGeneratorManagerEvents.guildGenerate, target, options);
-
-    if (this.hasOptionalIntent) {
-      await this.delete(
-        target.emojis.cache,
-        ServerGeneratorManagerEvents.emojiDelete,
-        this.options.reason
-      );
-      await this.delete(
-        target.stickers.cache,
-        ServerGeneratorManagerEvents.stickerDelete,
-        this.options.reason
-      );
+    if (target.roles.highest !== target.roles.botRoleFor(this.client.user)) {
+      throw new Error("The bot's role has to be the highest in order to generate the whole guild from scratch.");
     }
-    await this.delete(
-      target.roles.cache.filter(
-        (r) => r !== target.roles.everyone && !r.managed
-      ),
-      ServerGeneratorManagerEvents.roleDelete,
-      this.options.reason
-    );
-    await this.delete(
-      target.channels.cache.filter((c) => !c.isThread()),
-      ServerGeneratorManagerEvents.channelDelete,
-      this.options.reason
-    );
 
-    if (this.hasOptionalIntent) {
-      await this.createEmojis(
-        target.emojis,
-        options.emojis,
-        this.options.reason
-      );
-      await this.createStickers(
-        target.stickers,
-        options.stickers,
-        this.options.reason
-      );
-    }
-    await this.createRoles(target.roles, options.roles, this.options.reason);
-    await this.createChannels(
-      target.channels,
-      options.rootChannels,
-      this.options.reason
-    );
-    await this.createChannels(
-      target.channels,
-      options.channels,
-      this.options.reason
-    );
-
-    await target.edit(options, this.options.reason);
-
-    this.emit(ServerGeneratorManagerEvents.guildGenerated, target, options);
+    this.emit(ServerGeneratorManagerEvents.guildGenerate, target, options, overallReason);
+    await this.#deleteEverything(target, overallReason);
+    await this.#createEverything(target, options, overallReason);
+    this.emit(ServerGeneratorManagerEvents.guildGenerated, target, options, overallReason);
   }
 
-  private async getCaches(guild: Guild) {
+  async #handleChannelCreate(channel: TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StageChannel, options: CategoryOptions | GuildChannelOptions, reason?: string) {
+    if (options.isRulesChannel && channel.isTextBased()) {
+      await channel.guild.setRulesChannel(channel.id, reason);
+    }
+
+    if (options.isAFKChannel && channel.isVoiceBased()) {
+      await channel.guild.setAFKChannel(channel.id, reason);
+    }
+  }
+
+  async #getCaches(guild: Guild) {
     if (this.hasOptionalIntent) {
       await guild.emojis.fetch();
       await guild.stickers.fetch();
@@ -136,7 +102,27 @@ export class ServerGeneratorManager extends EventEmitter {
     await guild.channels.fetch();
   }
 
-  private async delete<T, Holds>(
+  async #deleteEverything(target: Guild, overallReason: string) {
+    if (this.hasOptionalIntent) {
+      await this.#delete(target.emojis.cache, ServerGeneratorManagerEvents.emojiDelete, overallReason);
+      await this.#delete(target.stickers.cache, ServerGeneratorManagerEvents.stickerDelete, overallReason);
+    }
+    await this.#delete(target.roles.cache.filter((r) => r !== target.roles.everyone && !r.managed), ServerGeneratorManagerEvents.roleDelete, overallReason);
+    await this.#delete(target.channels.cache.filter((c) => !c.isThread()), ServerGeneratorManagerEvents.channelDelete, overallReason);
+  }
+
+  async #createEverything(target: Guild, options: GuildOptions, overallReason: string) {
+    if (this.hasOptionalIntent) {
+      await this.#createEmojis(target.emojis, options.emojis, overallReason);
+      await this.#createStickers(target.stickers, options.stickers, overallReason);
+    }
+    await this.#createRoles(target.roles, options.roles, overallReason);
+    await this.#createChannels(target.channels, options.rootChannels, null, overallReason);
+    await this.#createCategories(target.channels, options.channels, null, overallReason);
+    await target.edit({ ...options, reason: overallReason });
+  }
+
+  async #delete<T, Holds>(
     collection: Collection<T, Holds>,
     event: string,
     reason?: string
@@ -145,11 +131,11 @@ export class ServerGeneratorManager extends EventEmitter {
 
     for (const [_, entity] of collection) {
       await (entity as unknown as DeletableEntity<Holds>).delete(reason);
-      this.emit(event, entity as Holds);
+      this.emit(event, entity as Holds, reason);
     }
   }
 
-  private async createRoles(
+  async #createRoles(
     roles: RoleManager,
     roleOptions: RoleOptions[],
     reason?: string
@@ -158,11 +144,15 @@ export class ServerGeneratorManager extends EventEmitter {
 
     for (const options of roleOptions) {
       const role = await roles.create({ reason, ...options });
-      this.emit(ServerGeneratorManagerEvents.roleCreate, role, options);
+      this.emit(ServerGeneratorManagerEvents.roleCreate, role, options, reason);
     }
   }
 
-  private async createThreads(
+  #isText(channel: GuildBasedChannel): channel is NewsChannel | TextChannel | ForumChannel {
+    return channel.isTextBased() && (channel instanceof NewsChannel || channel instanceof TextChannel || channel instanceof ForumChannel);
+  }
+
+  async #createThreads(
     channels: GuildChannelManager,
     threadOptions: ThreadOptions[],
     textChannelId: Snowflake,
@@ -170,66 +160,69 @@ export class ServerGeneratorManager extends EventEmitter {
   ) {
     if (!channels || !textChannelId || !threadOptions) return;
     const textChannel = await channels.fetch(textChannelId);
-    if (!textChannel.isText()) return;
+    if (!this.#isText(textChannel)) return;
 
     for (const options of threadOptions) {
       let thread: ThreadChannel;
-      if (textChannel instanceof NewsChannel) {
+      if (textChannel instanceof ForumChannel) {
         thread = await textChannel.threads.create({
           reason,
           ...options,
-        } as ThreadCreateOptions<AllowedThreadTypeForNewsChannel>);
-      } else {
-        thread = await textChannel.threads.create({
-          reason,
-          ...options,
-        } as ThreadCreateOptions<AllowedThreadTypeForTextChannel>);
+        } as GuildForumThreadCreateOptions)
       }
-      this.emit(ServerGeneratorManagerEvents.threadCreate, thread, options);
+      else if (textChannel instanceof NewsChannel) {
+        thread = await textChannel.threads.create({
+          reason,
+          ...options,
+        } as GuildTextThreadCreateOptions<AllowedThreadTypeForNewsChannel>);
+      }
+      else {
+        thread = await textChannel.threads.create({
+          reason,
+          ...options,
+        } as GuildTextThreadCreateOptions<AllowedThreadTypeForTextChannel>);
+      }
+
+      this.emit(ServerGeneratorManagerEvents.threadCreate, thread, options, reason);
     }
   }
 
-  private async createChannels(
-    channels: GuildChannelManager,
-    channelOptions: (CategoryOptions | GuildChannelOptions)[],
-    reason?: string,
-    parent?: Snowflake
-  ) {
+  async #createChannels(channels: GuildChannelManager, channelOptions: GuildChannelOptions[], parent?: Snowflake, reason?: string) {
     if (!channels || !channelOptions) return;
 
     for (const options of channelOptions) {
-      const channel = await channels.create(options.name, {
+      const channel: TextChannel = await channels.create({
         reason,
-        type: Constants.ChannelTypes[Constants.ChannelTypes.GUILD_CATEGORY],
         ...options,
-        parent,
+        parent
       });
       this.emit(ServerGeneratorManagerEvents.channelCreate, channel, options);
 
-      const isCategory =
-        !parent &&
-        channel.type ===
-          Constants.ChannelTypes[Constants.ChannelTypes.GUILD_CATEGORY];
-
-      if (options.children && isCategory) {
-        await this.createChannels(
-          channels,
-          options.children as GuildChannelOptions[],
-          reason,
-          channel.id
-        );
-      } else if (options.children && channel.isText()) {
-        await this.createThreads(
-          channels,
-          options.children as ThreadOptions[],
-          channel.id,
-          reason
-        );
+      if (options.children && channel.isTextBased()) {
+        await this.#createThreads(channels, options.children as ThreadOptions[], channel.id, reason);
       }
     }
   }
 
-  private async createEmojis(
+  async #createCategories(channels: GuildChannelManager, channelOptions: CategoryOptions[], parent?: Snowflake, reason?: string) {
+    if (!channels || !channelOptions) return;
+
+    for (const options of channelOptions) {
+      const channel = await channels.create({
+        reason,
+        ...options,
+        parent,
+        type: ChannelType.GuildCategory
+      });
+      this.emit(ServerGeneratorManagerEvents.channelCreate, channel, options);
+
+      if (options.children && channel.type === ChannelType.GuildCategory) {
+        await this.#createChannels(channels, options.children as GuildChannelOptions[], channel.id, reason);
+      }
+    }
+  }
+
+  async #createEmojis(
     emojis: GuildEmojiManager,
     emojiOptions: EmojiOptions[],
     reason?: string
@@ -237,34 +230,29 @@ export class ServerGeneratorManager extends EventEmitter {
     if (!emojis || !emojiOptions) return;
 
     for (const options of emojiOptions) {
-      const emoji = await emojis.create(options.attachment, options.name, {
+      const emoji = await emojis.create({
         reason,
-        ...options.options,
+        ...options
       });
-      this.emit(ServerGeneratorManagerEvents.emojiCreate, emoji, options);
+      this.emit(ServerGeneratorManagerEvents.emojiCreate, emoji, options, reason);
     }
   }
 
-  private async createStickers(
+  async #createStickers(
     stickers: GuildStickerManager,
     stickerOptions: StickerOptions[],
     reason?: string
   ) {
     if (!stickers || !stickerOptions) return;
-    if (
-      stickers.guild.premiumTier ===
-      Constants.PremiumTiers[Constants.PremiumTiers.NONE]
-    )
+    if (stickers.guild.premiumTier === GuildPremiumTier.None)
       return;
 
     for (const options of stickerOptions) {
-      const sticker = await stickers.create(
-        options.file,
-        options.name,
-        options.tags,
-        { reason, ...options.options }
-      );
-      this.emit(ServerGeneratorManagerEvents.stickerCreate, sticker, options);
+      const sticker = await stickers.create({
+        reason,
+        ...options
+      });
+      this.emit(ServerGeneratorManagerEvents.stickerCreate, sticker, options, reason);
     }
   }
 }
@@ -274,9 +262,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#guildGenerate
  * @param {Guild} Guild
  * @param {GuildOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.guildGenerate, (guild, options) => {
- *  console.log(`Generating guild ${guild.id} with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.guildGenerate, (guild, options, reason) => {
+ *  console.log(`Generating guild ${guild.id} for reason ${reason} with options`, options);
  * });
  */
 
@@ -285,9 +274,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#guildGenerated
  * @param {Guild} Guild
  * @param {GuildOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.guildGenerated, (guild, options) => {
- *  console.log(`Generated guild ${guild.id} with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.guildGenerated, (guild, options, reason) => {
+ *  console.log(`Generated guild ${guild.id} for reason ${reason} with options`, options);
  * });
  */
 
@@ -295,9 +285,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * Emitted when an old role is being deleted by the manager when generating the guild.
  * @event ServerGeneratorManager#roleDelete
  * @param {Role} role
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.roleDelete, (role) => {
- *  console.log(`Role ${role.id} deleted`);
+ * manager.on(ServerGeneratorManagerEvents.roleDelete, (role, reason) => {
+ *  console.log(`Role ${role.id} deleted for reason ${reason}`);
  * });
  */
 
@@ -305,9 +296,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * Emitted when an old channel is being deleted by the manager when generating the guild.
  * @event ServerGeneratorManager#channelDelete
  * @param {GuildChannel} channel
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.channelDelete, (channel) => {
- *  console.log(`Channel ${channel.id} deleted`);
+ * manager.on(ServerGeneratorManagerEvents.channelDelete, (channel, reason) => {
+ *  console.log(`Channel ${channel.id} deleted for reason ${reason}`);
  * });
  */
 
@@ -315,9 +307,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * Emitted when an old emoji is being deleted by the manager when generating the guild.
  * @event ServerGeneratorManager#emojiDelete
  * @param {GuildEmoji} emoji
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji) => {
- *  console.log(`Emoji ${emoji.id} deleted`);
+ * manager.on(ServerGeneratorManagerEvents.emojiDelete, (emoji, reason) => {
+ *  console.log(`Emoji ${emoji.id} deleted for reason ${reason}`);
  * });
  */
 
@@ -325,9 +318,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * Emitted when an old sticker is being deleted by the manager when generating the guild.
  * @event ServerGeneratorManager#stickerDelete
  * @param {Sticker} sticker
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.stickerDelete, (sticker) => {
- *  console.log(`Sticker ${sticker.id} deleted`);
+ * manager.on(ServerGeneratorManagerEvents.stickerDelete, (sticker, reason) => {
+ *  console.log(`Sticker ${sticker.id} deleted for reason ${reason}`);
  * });
  */
 
@@ -335,10 +329,11 @@ export class ServerGeneratorManager extends EventEmitter {
  * Emitted when a new channel is being created by the manager when generating the guild.
  * @event ServerGeneratorManager#channelCreate
  * @param { TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StoreChannel | StageChannel} channel
- * @param {GuildChannelOptions} options
+ * @param {CategoryOptions | GuildChannelOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.channelCreate, (channel, options) => {
- *  console.log(`Channel ${channel.id} created with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.channelCreate, (channel, options, reason) => {
+ *  console.log(`Channel ${channel.id} created for reason ${reason} with options`, options);
  * });
  */
 
@@ -347,9 +342,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#threadCreate
  * @param {ThreadChannel} thread
  * @param {ThreadOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.threadCreate, (thread, options) => {
- *  console.log(`Thread ${thread.id} created with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.threadCreate, (thread, options, reason) => {
+ *  console.log(`Thread ${thread.id} created for reason ${reason} with options`, options);
  * });
  */
 
@@ -358,9 +354,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#roleCreate
  * @param {Role} role
  * @param {RoleOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.roleCreate, (role, options) => {
- *  console.log(`Role ${role.id} created with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.roleCreate, (role, options, reason) => {
+ *  console.log(`Role ${role.id} created for reason ${reason} with options`, options);
  * });
  */
 
@@ -369,9 +366,10 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#emojiCreate
  * @param {GuildEmoji} emoji
  * @param {EmojiOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.emojiCreate, (emoji, options) => {
- *  console.log(`Emoji ${emoji.id} created with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.emojiCreate, (emoji, options, reason) => {
+ *  console.log(`Emoji ${emoji.id} created for reason ${reason} with options`, options);
  * });
  */
 
@@ -380,8 +378,9 @@ export class ServerGeneratorManager extends EventEmitter {
  * @event ServerGeneratorManager#stickerCreate
  * @param {Sticker} sticker
  * @param {StickerOptions} options
+ * @param {string?} reason
  * @example
- * manager.on(ServerGeneratorManagerEvents.stickerCreate, (sticker, options) => {
- *  console.log(`Sticker ${sticker.id} created with options`, options);
+ * manager.on(ServerGeneratorManagerEvents.stickerCreate, (sticker, options, reason) => {
+ *  console.log(`Sticker ${sticker.id} created for reason ${reason} with options`, options);
  * });
  */
