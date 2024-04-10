@@ -13,9 +13,7 @@ import {
 
 export * from './ServerGeneratorOptions';
 
-type AnyProperty = {
-  [name: string]: any;
-};
+type AnyProperty = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export type RoleOptions = RoleCreateOptions & AnyProperty;
 export type EmojiOptions = GuildEmojiCreateOptions & AnyProperty;
@@ -47,3 +45,7 @@ export type GuildOptions = {
   rootChannels?: GuildChannelOptions[];
   channels?: CategoryOptions[];
 } & Omit<GuildCreateOptions, 'channels' | 'roles'>;
+
+export interface DeletableEntity<T> {
+  delete(reason?: string): Promise<T>;
+}

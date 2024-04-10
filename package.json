@@ -1,49 +1,51 @@
 {
-  "name": "@hunteroi/discord-server-generator",
-  "version": "2.0.0",
-  "description": "A framework to generate Discord guild categories, channels and roles, built with DiscordJS",
-  "main": "lib/index.js",
-  "scripts": {
-    "build": "tsc",
-    "build:docs": "typedoc",
-    "prepublish": "yarn build:docs",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"examples/**/*.ts\" \"examples/**/*.js\" ",
-    "lint": "tslint -p tsconfig.json",
-    "example": "yarn build & node ./examples/index.js"
+  "author": "HunteRoi <me@tinaeldevresse.eu> (https://tinaeldevresse.eu/)",
+  "bugs": {
+    "url": "https://github.com/hunteroi/discord-server-generator/issues"
   },
-  "repository": "git://github.com/hunteroi/discord-server-generator.git",
+  "description": "A framework to generate Discord guild categories, channels and roles, built with DiscordJS",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^16.11.5",
+    "@types/ws": "^8.2.0",
+    "discord-sync-commands": "^0.3.0",
+    "discord.js": "^14.14.1",
+    "eslint": "^9.0.0",
+    "typedoc": "^0.25.13",
+    "typescript": "^5.4.4",
+    "typescript-eslint": "^7.6.0"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": ">=20.x"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "funding": "https://github.com/sponsors/hunteroi",
+  "homepage": "https://github.com/hunteroi/discord-server-generator#readme",
   "keywords": [
     "discordjs",
     "guild-generator",
     "server-generator",
     "template-discord"
   ],
-  "author": "HunteRoi <me@tinaeldevresse.eu> (https://tinaeldevresse.eu/)",
-  "funding": "https://github.com/sponsors/hunteroi",
-  "engines": {
-    "node": ">=16.6.0"
-  },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hunteroi/discord-server-generator/issues"
-  },
-  "homepage": "https://github.com/hunteroi/discord-server-generator#readme",
-  "dependencies": {
+  "main": "lib/index.js",
+  "name": "@hunteroi/discord-server-generator",
+  "peerDependencies": {
     "discord.js": "14.x"
   },
-  "devDependencies": {
-    "@types/node": "^16.11.5",
-    "@types/ws": "^8.2.0",
-    "discord-sync-commands": "^0.3.0",
-    "tslint": "^6.1.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typedoc": "^0.23.21",
-    "typescript": "^4.4.4"
+  "repository": "git://github.com/hunteroi/discord-server-generator.git",
+  "scripts": {
+    "build": "tsc",
+    "build:docs": "typedoc",
+    "example": "yarn build & node ./examples/index.js",
+    "lint": "eslint ./src",
+    "prepublish": "yarn lint && yarn build && yarn build:docs"
   },
-  "directories": {
-    "lib": "lib"
-  },
-  "files": [
-    "lib/**/*"
-  ]
+  "type": "module",
+  "version": "2.0.2"
 }

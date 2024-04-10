@@ -36,8 +36,8 @@ import {
   StickerOptions,
   ServerGeneratorOptions,
   ThreadOptions,
+  DeletableEntity
 } from './types';
-import { DeletableEntity } from './types/DiscordExtraTypes';
 
 /**
  *
@@ -48,7 +48,7 @@ import { DeletableEntity } from './types/DiscordExtraTypes';
 export class ServerGeneratorManager extends EventEmitter {
   private client: Client;
   public options: ServerGeneratorOptions;
-  private hasOptionalIntent: boolean = false;
+  private hasOptionalIntent = false;
 
   constructor(client: Client, options: ServerGeneratorOptions = {
     reason: `Automated by ${client.user}`
@@ -68,8 +68,20 @@ export class ServerGeneratorManager extends EventEmitter {
     this.on(ServerGeneratorManagerEvents.channelCreate, this.#handleChannelCreate);
   }
 
+  /**
+   * Generates a guild from scratch with the given options.
+   *
+   * @param {GuildResolvable} guild
+   * @param {GuildOptions} options
+   * @param {string?} [reason]
+   * @memberof ServerGeneratorManager
+   */
   public async generate(guild: GuildResolvable, options: GuildOptions, reason?: string) {
-    const overallReason = reason ?? this.options.reason;
+    if (!this.client.isReady()) {
+      throw new Error('You should call this method on client#ready');
+    }
+
+    const overallReason = reason ?? this.options.reason ?? 'Automated by the bot';
     const target = await this.client.guilds.fetch({ guild });
     await this.#getCaches(target);
 
@@ -129,15 +141,15 @@ export class ServerGeneratorManager extends EventEmitter {
   ) {
     if (!collection || !event) return;
 
-    for (const [_, entity] of collection) {
-      await (entity as unknown as DeletableEntity<Holds>).delete(reason);
-      this.emit(event, entity as Holds, reason);
+    for (const entity of collection.values()) {
+      await (entity as DeletableEntity<Holds>).delete(reason);
+      this.emit(event, entity, reason);
     }
   }
 
   async #createRoles(
-    roles: RoleManager,
-    roleOptions: RoleOptions[],
+    roles?: RoleManager,
+    roleOptions?: RoleOptions[],
     reason?: string
   ) {
     if (!roles || !roleOptions) return;
@@ -153,14 +165,14 @@ export class ServerGeneratorManager extends EventEmitter {
   }
 
   async #createThreads(
-    channels: GuildChannelManager,
-    threadOptions: ThreadOptions[],
-    textChannelId: Snowflake,
+    channels?: GuildChannelManager,
+    threadOptions?: ThreadOptions[],
+    textChannelId?: Snowflake,
     reason?: string
   ) {
     if (!channels || !textChannelId || !threadOptions) return;
     const textChannel = await channels.fetch(textChannelId);
-    if (!this.#isText(textChannel)) return;
+    if (!textChannel || !this.#isText(textChannel)) return;
 
     for (const options of threadOptions) {
       let thread: ThreadChannel;
@@ -187,7 +199,7 @@ export class ServerGeneratorManager extends EventEmitter {
     }
   }
 
-  async #createChannels(channels: GuildChannelManager, channelOptions: GuildChannelOptions[], parent?: Snowflake, reason?: string) {
+  async #createChannels(channels?: GuildChannelManager, channelOptions?: GuildChannelOptions[], parent?: Snowflake | null, reason?: string) {
     if (!channels || !channelOptions) return;
 
     for (const options of channelOptions) {
@@ -204,7 +216,7 @@ export class ServerGeneratorManager extends EventEmitter {
     }
   }
 
-  async #createCategories(channels: GuildChannelManager, channelOptions: CategoryOptions[], parent?: Snowflake, reason?: string) {
+  async #createCategories(channels?: GuildChannelManager, channelOptions?: CategoryOptions[], parent?: Snowflake | null, reason?: string) {
     if (!channels || !channelOptions) return;
 
     for (const options of channelOptions) {
@@ -223,8 +235,8 @@ export class ServerGeneratorManager extends EventEmitter {
   }
 
   async #createEmojis(
-    emojis: GuildEmojiManager,
-    emojiOptions: EmojiOptions[],
+    emojis?: GuildEmojiManager,
+    emojiOptions?: EmojiOptions[],
     reason?: string
   ) {
     if (!emojis || !emojiOptions) return;
@@ -239,8 +251,8 @@ export class ServerGeneratorManager extends EventEmitter {
   }
 
   async #createStickers(
-    stickers: GuildStickerManager,
-    stickerOptions: StickerOptions[],
+    stickers?: GuildStickerManager,
+    stickerOptions?: StickerOptions[],
     reason?: string
   ) {
     if (!stickers || !stickerOptions) return;
