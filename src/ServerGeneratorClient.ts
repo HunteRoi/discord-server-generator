@@ -1,7 +1,7 @@
-import { Client, ClientOptions } from 'discord.js';
+import { Client, type ClientOptions } from "discord.js";
 
-import { ServerGeneratorManager } from '.';
-import { ServerGeneratorOptions } from './types';
+import { ServerGeneratorManager } from ".";
+import type { ServerGeneratorOptions } from "./types";
 
 /**
  * A Discord client with an embedded {@link ServerGeneratorManager}.
@@ -11,11 +11,17 @@ import { ServerGeneratorOptions } from './types';
  * @extends {Client}
  */
 export class ServerGeneratorClient extends Client {
-  public readonly serverGeneratorManager: ServerGeneratorManager;
+    public readonly serverGeneratorManager: ServerGeneratorManager;
 
-  constructor(options: ClientOptions, managerOptions: ServerGeneratorOptions) {
-    super(options);
+    constructor(
+        options: ClientOptions,
+        managerOptions: ServerGeneratorOptions,
+    ) {
+        super(options);
 
-    this.serverGeneratorManager = new ServerGeneratorManager(this, managerOptions);
-  }
+        this.serverGeneratorManager = new ServerGeneratorManager(
+            this,
+            managerOptions,
+        );
+    }
 }
