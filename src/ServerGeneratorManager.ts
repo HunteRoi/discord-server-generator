@@ -26,7 +26,7 @@ import {
     type VoiceChannel,
 } from "discord.js";
 
-import { ServerGeneratorManagerEvents } from "./ServerGeneratorManagerEvents";
+import { ServerGeneratorManagerEvents } from "./ServerGeneratorManagerEvents.js";
 import type {
     CategoryOptions,
     DeletableEntity,
@@ -37,7 +37,7 @@ import type {
     ServerGeneratorOptions,
     StickerOptions,
     ThreadOptions,
-} from "./types";
+} from "./types/index.js";
 
 /**
  *

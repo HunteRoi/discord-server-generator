@@ -11,7 +11,7 @@ import type {
     RoleCreateOptions,
 } from "discord.js";
 
-export * from "./ServerGeneratorOptions";
+export * from "./ServerGeneratorOptions.js";
 
 // biome-ignore lint: should allow any property possible
 type AnyProperty = Record<string, any>;

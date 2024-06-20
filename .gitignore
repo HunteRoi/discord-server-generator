@@ -1,8 +1,6 @@
 # Node
-node_modules
+node_modules/
 
 # Compiled files
-lib
-
-# Tests
-**test**
+lib/
+examples/index.js

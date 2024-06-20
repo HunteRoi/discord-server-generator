@@ -1,7 +1,7 @@
 import { Client, type ClientOptions } from "discord.js";
 
-import { ServerGeneratorManager } from ".";
-import type { ServerGeneratorOptions } from "./types";
+import { ServerGeneratorManager } from "./ServerGeneratorManager.js";
+import type { ServerGeneratorOptions } from "./types/index.js";
 
 /**
  * A Discord client with an embedded {@link ServerGeneratorManager}.

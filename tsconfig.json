@@ -3,13 +3,14 @@
     "baseUrl": "./src",
     "declaration": true,
     "esModuleInterop": true,
-    "module": "commonjs",
     "outDir": "./lib",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es6"
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
   "exclude": [
     "lib/*",
