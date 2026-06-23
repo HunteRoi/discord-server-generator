@@ -5,13 +5,13 @@
   },
   "description": "A framework to generate Discord guild categories, channels and roles, built with DiscordJS",
   "devDependencies": {
-    "@biomejs/biome": "1.6.4",
-    "@types/node": "^20.14.6",
-    "@types/ws": "^8.5.10",
-    "discord-sync-commands": "^0.3.0",
-    "discord.js": "^14.15.3",
-    "typedoc": "^0.25.13",
-    "typescript": "^5.4.5"
+    "@biomejs/biome": "2.5.1",
+    "@types/node": "^26.0.0",
+    "@types/ws": "^8.18.1",
+    "discord-sync-commands": "^0.5.2",
+    "discord.js": "^14.26.4",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3"
   },
   "directories": {
     "lib": "lib"
@@ -40,10 +40,10 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "typedoc",
-    "lint": "biome check --apply ./src",
+    "lint": "biome check --write ./src",
     "prepublish": "yarn lint && yarn build && yarn build:docs",
     "start": "yarn build && tsc ./examples/index.ts --target esnext --module nodenext --moduleResolution nodenext && node ./examples/index.js"
   },
   "type": "module",
-  "version": "2.1.0"
+  "version": "2.1.1"
 }
